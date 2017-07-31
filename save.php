@@ -2,38 +2,58 @@
 
 include("config.php");
 
-//$input = file_get_contents("php://input");
 $json = json_decode($input);
 
 $data['device_id'] = isset($json->device_id) ? $json->device_id : "";
+$data['facebook_id'] = isset($json->facebook_id) ? $json->facebook_id : "";
 $data['info_id'] = isset($json->info_id) ? $json->info_id : 0;
-//$data['is_claimed'] = isset($json->is_claimed) ? $json->is_claimed : 0;
 
 $connection = new PDO(
     "mysql:dbname=$mydatabase;host=$myhost;port=$myport",
     $myuser, $mypass
 );
     
-// create record if not exists
-$sql1 = "INSERT INTO inbox (device_id, info_id, last_update)
-    VALUES (:device_id, :info_id, NOW())
-    ON DUPLICATE KEY UPDATE
-    info_id = :info_id2, last_update = NOW()
-";
-$statement1 = $connection->prepare($sql1);
-$statement1->bindParam(":device_id", $data['device_id']);
-$statement1->bindParam(":info_id", $data['info_id']);
-//$statement1->bindParam(":is_claimed", $data['is_claimed']);
-$statement1->bindParam(":info_id2", $data['info_id']);
-//$statement1->bindParam(":is_claimed2", $data['is_claimed']);
-$statement1->execute();
+if ($data['facebook_id'] != "") {
+    
+    // create record if not exists
+    $sql1 = "INSERT INTO inbox_fb (facebook_id, info_id, last_update)
+        VALUES (:facebook_id, :info_id, NOW())
+        ON DUPLICATE KEY UPDATE
+        last_update = NOW()
+    ";
+    $statement1 = $connection->prepare($sql1);
+    $statement1->bindParam(":facebook_id", $data['facebook_id']);
+    $statement1->bindParam(":info_id", $data['info_id']);
+    $statement1->execute();
 
-$data['info_id'] = intval($data['info_id']);
-//$data['is_claimed'] = intval($data['is_claimed']);
-$data['affected_row'] = $statement1->rowCount();
-$data['error'] = 0;
-$data['message'] = 'Success';
+    $data['info_id'] = intval($data['info_id']);
+    $data['affected_row'] = $statement1->rowCount();
+    $data['error'] = 0;
+    $data['message'] = 'Success';
+    
+} elseif ($data['device_id'] != "") {
+    
+    // create record if not exists
+    $sql1 = "INSERT INTO inbox (device_id, info_id, last_update)
+        VALUES (:device_id, :info_id, NOW())
+        ON DUPLICATE KEY UPDATE
+        last_update = NOW()
+    ";
+    $statement1 = $connection->prepare($sql1);
+    $statement1->bindParam(":device_id", $data['device_id']);
+    $statement1->bindParam(":info_id", $data['info_id']);
+    $statement1->execute();
 
-//header('Content-Type: application/json');
-//echo json_encode($data);   
+    $data['info_id'] = intval($data['info_id']);
+    $data['affected_row'] = $statement1->rowCount();
+    $data['error'] = 0;
+    $data['message'] = 'Success';
+    
+} else {
+    
+    $data['error'] = 1;
+    $data['message'] = 'Error: Facebook ID or Device ID is required';
+    
+}
+
 return $data;
