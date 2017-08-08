@@ -29,7 +29,7 @@ if ($data['facebook_id'] != "") {
             AND inbox_fb.facebook_id IS NULL
     ";
     $statement1 = $connection->prepare($sql1);
-    $statement1->bindParam(":device_id", $data['device_id']);
+    $statement1->bindParam(":facebook_id", $data['facebook_id']);
     $statement1->bindParam(":os", $data['os']);
     $statement1->execute();
     $row_inbox = $statement1->fetchAll(PDO::FETCH_ASSOC);
