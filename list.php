@@ -8,6 +8,7 @@ $json = json_decode($input);
 $data['device_id'] = isset($json->device_id) ? $json->device_id : "";
 $data['facebook_id'] = isset($json->facebook_id) ? $json->facebook_id : "";
 $data['os'] = isset($json->os) ? $json->os : "";
+$data['limit'] = isset($json->limit) ? $json->limit : 100;
 
 $connection = new PDO(
     "mysql:dbname=$mydatabase;host=$myhost;port=$myport",
@@ -26,7 +27,9 @@ if ($data['facebook_id'] != "") {
         WHERE COALESCE(IF(TRIM(master_inbox.target_fb) = '', null, master_inbox.target_fb), :facebook_id) = :facebook_id
             AND master_inbox.os IN ('All', :os)
             AND master_inbox.status = 1
+            AND NOW() BETWEEN COALESCE(valid_from, NOW()) AND COALESCE(valid_to, NOW())
             AND inbox_fb.facebook_id IS NULL
+        LIMIT {$data['limit']}
     ";
     $statement1 = $connection->prepare($sql1);
     $statement1->bindParam(":facebook_id", $data['facebook_id']);
@@ -48,7 +51,9 @@ if ($data['facebook_id'] != "") {
         WHERE COALESCE(IF(TRIM(master_inbox.target_device) = '', null, master_inbox.target_device), :device_id) = :device_id
             AND master_inbox.os IN ('All', :os)
             AND master_inbox.status = 1
+            AND NOW() BETWEEN COALESCE(valid_from, NOW()) AND COALESCE(valid_to, NOW())
             AND inbox.device_id IS NULL
+        LIMIT {$data['limit']}
     ";
     $statement1 = $connection->prepare($sql1);
     $statement1->bindParam(":device_id", $data['device_id']);
