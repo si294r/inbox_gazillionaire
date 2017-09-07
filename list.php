@@ -56,7 +56,7 @@ if ($data['facebook_id'] != "") {
                     UNION ALL
                     SELECT :device_id
                     UNION ALL
-                    SELECT user_id FROM device_user WHERE device_id = :device_id
+                    SELECT cast(user_id as char(100)) FROM device_user WHERE device_id = :device_id
                 )
             )
             AND master_inbox.os IN ('All', :os)
