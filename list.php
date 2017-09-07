@@ -48,7 +48,17 @@ if ($data['facebook_id'] != "") {
         LEFT JOIN inbox 
             ON master_inbox.info_id = inbox.info_id
             AND inbox.device_id = :device_id
-        WHERE COALESCE(IF(TRIM(master_inbox.target_device) = '', null, master_inbox.target_device), :device_id) = :device_id
+        WHERE 
+            (
+		master_inbox.target_device is null 
+                OR master_inbox.target_device IN (
+                    SELECT '' 
+                    UNION ALL
+                    SELECT :device_id
+                    UNION ALL
+                    SELECT user_id FROM device_user WHERE device_id = :device_id
+                )
+            )
             AND master_inbox.os IN ('All', :os)
             AND master_inbox.status = 1
             AND NOW() BETWEEN COALESCE(valid_from, NOW()) AND COALESCE(valid_to, NOW())
