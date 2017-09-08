@@ -15,6 +15,28 @@ $connection = new PDO(
     $myuser, $mypass
 );
     
+if ($IS_DEVELOPMENT == false) {
+    $filter_time = "NOW() BETWEEN COALESCE(valid_from, NOW()) AND COALESCE(valid_to, NOW())"; 
+} else {
+    $iservice = "gettime-dev";
+    $result_gettime = file_get_contents('http://alegrium5.alegrium.com/gazillionaire/cloudsave/?'.$iservice, null, stream_context_create(
+            array(
+                'http' => array(
+                    'method' => 'POST',
+                    'header' => 'Content-Type: application/json'. "\r\n"
+                    . 'x-api-key: ' . X_API_KEY_TOKEN . "\r\n"
+                    . 'Content-Length: ' . strlen('{}') . "\r\n",
+                    'content' => '{}'
+                )
+            )
+        )
+    );
+    $result_gettime = json_decode($result_gettime, true);
+    $timestamp = $result_gettime['timestamp'];
+    
+    $filter_time = "$timestamp BETWEEN COALESCE(UNIX_TIMESTAMP(valid_from), $timestamp) AND COALESCE(UNIX_TIMESTAMP(valid_to), $timestamp)";
+}
+
 if ($data['facebook_id'] != "") {
     
     $sql1 = "
@@ -27,7 +49,7 @@ if ($data['facebook_id'] != "") {
         WHERE COALESCE(IF(TRIM(master_inbox.target_fb) = '', null, master_inbox.target_fb), :facebook_id) = :facebook_id
             AND master_inbox.os IN ('All', :os)
             AND master_inbox.status = 1
-            AND NOW() BETWEEN COALESCE(valid_from, NOW()) AND COALESCE(valid_to, NOW())
+            AND $filter_time
             AND inbox_fb.facebook_id IS NULL
         LIMIT {$data['limit']}
     ";
@@ -61,7 +83,7 @@ if ($data['facebook_id'] != "") {
             )
             AND master_inbox.os IN ('All', :os)
             AND master_inbox.status = 1
-            AND NOW() BETWEEN COALESCE(valid_from, NOW()) AND COALESCE(valid_to, NOW())
+            AND $filter_time
             AND inbox.device_id IS NULL
         LIMIT {$data['limit']}
     ";
