@@ -60,7 +60,7 @@ if ($data['facebook_id'] != "") {
             AND master_inbox.status = 1
             AND $filter_time
             AND inbox_fb.facebook_id IS NULL
-        ORDER BY valid_from, info_id
+        ORDER BY COALESCE(valid_from, NOW()), info_id
         LIMIT {$data['limit']}
     ";
     $statement1 = $connection->prepare($sql1);
@@ -96,7 +96,7 @@ if ($data['facebook_id'] != "") {
             AND master_inbox.status = 1
             AND $filter_time
             AND inbox.device_id IS NULL
-        ORDER BY valid_from, info_id
+        ORDER BY COALESCE(valid_from, NOW()), info_id
         LIMIT {$data['limit']}
     ";
     $statement1 = $connection->prepare($sql1);
