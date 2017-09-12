@@ -60,8 +60,8 @@ if ($data['facebook_id'] != "") {
             AND master_inbox.status = 1
             AND $filter_time
             AND inbox_fb.facebook_id IS NULL
-        LIMIT {$data['limit']}
         ORDER BY valid_from, info_id
+        LIMIT {$data['limit']}
     ";
     $statement1 = $connection->prepare($sql1);
     $statement1->bindParam(":facebook_id", $data['facebook_id']);
@@ -96,8 +96,8 @@ if ($data['facebook_id'] != "") {
             AND master_inbox.status = 1
             AND $filter_time
             AND inbox.device_id IS NULL
-        LIMIT {$data['limit']}
         ORDER BY valid_from, info_id
+        LIMIT {$data['limit']}
     ";
     $statement1 = $connection->prepare($sql1);
     $statement1->bindParam(":device_id", $data['device_id']);
