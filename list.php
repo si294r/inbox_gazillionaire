@@ -46,7 +46,15 @@ if ($data['facebook_id'] != "") {
         LEFT JOIN inbox_fb 
             ON master_inbox.info_id = inbox_fb.info_id
             AND inbox_fb.facebook_id = :facebook_id
-        WHERE COALESCE(IF(TRIM(master_inbox.target_fb) = '', null, master_inbox.target_fb), :facebook_id) = :facebook_id
+        WHERE 
+            (
+                master_inbox.target_fb is null
+                OR master_inbox.target_fb IN (
+                    SELECT ''
+                    UNION ALL
+                    SELECT :facebook_id
+                )
+            )
             AND master_inbox.os IN ('All', :os)
             AND master_inbox.status = 1
             AND $filter_time
