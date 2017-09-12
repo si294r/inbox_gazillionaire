@@ -41,7 +41,7 @@ if ($data['facebook_id'] != "") {
     
     $sql1 = "
         SELECT master_inbox.*,
-            COALESCE(inbox.facebook_id, :facebook_id) facebook_id
+            COALESCE(inbox_fb.facebook_id, :facebook_id) facebook_id
         FROM master_inbox 
         LEFT JOIN inbox_fb 
             ON master_inbox.info_id = inbox_fb.info_id
@@ -55,6 +55,7 @@ if ($data['facebook_id'] != "") {
                     SELECT :facebook_id
                 )
             )
+            AND ( master_inbox.target_device is null OR master_inbox.target_device = '' )
             AND master_inbox.os IN ('All', :os)
             AND master_inbox.status = 1
             AND $filter_time
@@ -89,6 +90,7 @@ if ($data['facebook_id'] != "") {
                     SELECT cast(user_id as char(100)) FROM device_user WHERE device_id = :device_id
                 )
             )
+            AND ( master_inbox.target_fb is null OR master_inbox.target_fb = '' )
             AND master_inbox.os IN ('All', :os)
             AND master_inbox.status = 1
             AND $filter_time
