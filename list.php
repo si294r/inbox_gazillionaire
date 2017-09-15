@@ -52,7 +52,6 @@ if ($data['device_id'] != "") {
 		master_inbox.target_device is null 
                 OR master_inbox.target_device = ''
                 OR master_inbox.target_device = :device_id
-                )
             )
             AND master_inbox.os IN ('All', :os)
             AND master_inbox.status = 1
