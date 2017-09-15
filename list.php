@@ -62,7 +62,7 @@ if ($data['device_id'] != "") {
         LIMIT {$data['limit']}
     ";
     $statement1 = $connection->prepare($sql1);
-    $statement1->bindParam(":device_id", $user_id);
+    $statement1->bindParam(":device_id", strval($user_id));
     $statement1->bindParam(":os", $data['os']);
     $statement1->execute();
     $row_inbox = $statement1->fetchAll(PDO::FETCH_ASSOC);

@@ -26,7 +26,7 @@ if ($data['device_id'] != "") {
             last_update = NOW()
         ";
         $statement1 = $connection->prepare($sql1);
-        $statement1->bindParam(":device_id", $user_id);
+        $statement1->bindParam(":device_id", strval($user_id));
         $statement1->bindParam(":info_id", $info_id);
         $statement1->execute();
         $affected_row += $statement1->rowCount();
