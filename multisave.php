@@ -19,6 +19,7 @@ if ($data['device_id'] != "") {
             
     $affected_row = 0;
     foreach ($data['info_id'] as $info_id) {
+        if ($info_id == 0) continue;
         // create record if not exists
         $sql1 = "INSERT INTO inbox (device_id, info_id, last_update)
             VALUES (:device_id, :info_id, NOW())
