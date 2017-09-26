@@ -3,6 +3,7 @@
 $start_time = microtime(true);
 
 $IS_DEVELOPMENT = FALSE;
+$BUILD_TYPE = 0;
 require 'token.php';
 
 //show_error(503, "503 Service Unavailable", "We are currently under maintenance.");
@@ -58,7 +59,12 @@ $current_world = isset($params[1]) && is_numeric($params[1]) ? $params[1]: "1";
 
 // if service suffix is -dev then mark as DEVELOPMENT
 if (strpos($service, "-dev")) {
-    $service = str_replace("-dev", "", $service);
+    $arr_service = explode("-dev", $service);
+    $service = $arr_service[0];
+    if (isset($arr_service[1]) && is_numeric($arr_service[1])) {
+        $BUILD_TYPE = intval($arr_service[1]);
+    }
+//    $service = str_replace("-dev", "", $service);
     $IS_DEVELOPMENT = true;
 }
 

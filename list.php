@@ -17,7 +17,7 @@ $connection = new PDO(
 if ($IS_DEVELOPMENT == false) {
     $filter_time = "NOW() BETWEEN COALESCE(valid_from, NOW()) AND COALESCE(valid_to, NOW())"; 
 } else {
-    $iservice = "gettime-dev";
+    $iservice = "gettime-dev".$BUILD_TYPE;
     $result_gettime = file_get_contents('http://alegrium5.alegrium.com/gazillionaire/cloudsave/?'.$iservice, null, stream_context_create(
             array(
                 'http' => array(
